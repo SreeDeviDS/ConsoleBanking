@@ -1,64 +1,58 @@
-# Console Banking System (Core Java)
+# Banking Management System (Core Java)
 
-A menu-driven banking application in Core Java. It manages Savings and Current accounts entirely in the console and was built to practise object-oriented design and the Java Collections framework.
+A console-based banking application written in Core Java. It lets you create Savings and Current accounts and perform deposits, withdrawals, balance checks, interest calculation, and transaction history from a simple menu. The project focuses on object-oriented design: abstraction, inheritance, interfaces, and polymorphism.
 
 ## Features
 
-- Create a Savings or Current account with an opening balance (a negative opening balance is set to 0)
-- Select an account by its ID and work with it
-- Deposit money and withdraw money, with a clear success or failure message for each
+- Create a **Savings** or **Current** account with an opening balance
+- Select an existing account by its ID
+- Deposit and withdraw money, with validation for invalid amounts
 - Check the available balance
-- View the transaction history of an account, including failed attempts (invalid amount, insufficient balance, overdraft limit exceeded)
-- Apply interest to Savings accounts (4% of the current balance)
-- Input validation: text or empty input at any prompt is rejected and the user is asked again, so the program does not crash
+- View the transaction history for an account
+- Apply interest to Savings accounts
+- Input validation on the menu, so wrong choices don't crash the program
 
-## Account rules
+## Object-oriented design
 
-| | Savings Account | Current Account |
-|---|---|---|
-| Withdrawal | Rejected if the amount is more than the balance | Allowed below zero up to an overdraft limit of 5000 |
-| Interest | 4% of the current balance | Not applicable |
-| Invalid deposit or withdrawal amount (0 or negative) | Rejected and logged in the history | Rejected and logged in the history |
+| Concept | Where it is used |
+|---|---|
+| **Abstraction** | `Account` is an abstract class with an abstract `withdraw()` method |
+| **Inheritance** | `SavingsAccount` and `CurrentAccount` extend `Account` |
+| **Interface** | `InterestApplicable` is implemented only by `SavingsAccount` |
+| **Polymorphism** | Each account type has its own `withdraw()` behaviour, called through the `Account` type |
+| **Encapsulation** | Balance and account ID are private, with getters and setters |
+| **Collections** | `ArrayList` stores accounts and each account's transaction history |
 
-The interest rate and the overdraft limit are constants in `SavingsAccount` and `CurrentAccount`.
+## Business rules
 
-## OOP concepts used
-
-- **Abstraction:** `Account` is an abstract class with an abstract `withdraw()` method.
-- **Inheritance:** `SavingsAccount` and `CurrentAccount` extend `Account`.
-- **Interface:** `InterestApplicable` declares `applyInterest()` and is implemented only by `SavingsAccount`.
-- **Polymorphism:** `withdraw()` behaves differently in each subclass. The menu works with `Account` references and uses `instanceof InterestApplicable` to decide whether interest applies.
-- **Encapsulation:** balance and account ID are private and accessed through getters and setters.
-- **Collections:** `ArrayList<Account>` holds all accounts, and each account keeps its own `ArrayList<String>` of transaction history.
-- **Static counter:** a static field generates a unique account ID for each new account.
+- A negative opening balance is set to 0.
+- **Savings account:** a withdrawal is rejected if it is more than the balance. Interest is applied at a sample rate of 4%.
+- **Current account:** withdrawals are allowed even when the balance goes below zero (no overdraft limit in this simple version).
+- Deposits and withdrawals of zero or negative amounts are rejected and recorded in the history.
 
 ## Project structure
 
 ```
-ConsoleBanking/
-└── src/
-    ├── Account.java            (abstract base class)
-    ├── SavingsAccount.java     (extends Account, implements InterestApplicable)
-    ├── CurrentAccount.java     (extends Account, overdraft limit)
-    ├── InterestApplicable.java (interface)
-    └── Main.java               (menu, input handling and program entry point)
+src/
+├── Main.java               Console menu (class Tech)
+├── Account.java            Abstract base class
+├── SavingsAccount.java     Savings account, implements InterestApplicable
+├── CurrentAccount.java     Current account
+└── InterestApplicable.java Interface for accounts that earn interest
 ```
 
 ## How to run
 
-Requires JDK 8 or later. From the project root:
-
-```bash
-javac -d out src/*.java
-java -cp out Main
-```
-
-## Example session
-
-Menu:
+You need JDK 8 or later.
 
 ```
---- MENU ---
+javac src/*.java
+java -cp src Tech
+```
+
+## Menu
+
+```
 1. Create Account
 2. Select Account
 3. Deposit
@@ -69,20 +63,21 @@ Menu:
 8. Exit
 ```
 
-Creating a Savings account with 10000, depositing 2000, withdrawing 3000 and applying interest gives this history:
+## Known limitations
 
-```
-Transaction history:
-Account created with balance: 10000.0 and AccountID: 1
-Deposited: 2000.0, Balance: 12000.0
-Withdrawn: 3000.0, Balance: 9000.0
-Interest applied: 360.0, Balance: 9360.0
-```
+- Money is stored as `double`. A real banking system would use `BigDecimal` to avoid rounding errors.
+- Data is kept in memory only, so accounts are lost when the program exits.
+- Account IDs come from a simple static counter.
+- No automated tests yet.
 
-## Limitations and planned improvements
+## Possible improvements
 
-- Data is stored in memory only and is lost when the program exits. Planned: persist accounts and transactions in MySQL using JDBC.
-- Balances use `double`. `BigDecimal` is the correct type for money.
-- Add JUnit tests for deposit, withdraw, interest and the overdraft limit.
-- Move the code into packages and use custom exceptions instead of history messages for failed operations.
-- Next step: rebuild it as a Spring Boot REST API with accounts and transactions in MySQL.
+- Use `BigDecimal` for all amounts
+- Save accounts to a file or a MySQL database
+- Add custom exceptions for insufficient funds and invalid input
+- Add JUnit tests
+- Add an overdraft limit for Current accounts
+
+## Author
+
+SreeDevi DS · [LinkedIn](https://www.linkedin.com/in/sreedevi-ds-50914a177)
